@@ -1,0 +1,30 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:villager",
+    "minecraft:iron_golem",
+    "minecraft:wandering_trader",
+    "minecraft:cow",
+    "minecraft:pig",
+    "minecraft:wolf",
+    "minecraft:polar_bear",
+    "minecraft:goat",
+    "minecraft:dolphin",
+    "minecraft:sheep",
+    "minecraft:chicken",
+    "minecraft:horse",
+    "minecraft:donkey",
+    "minecraft:mule",
+    "minecraft:llama",
+    "minecraft:rabbit",
+    "minecraft:cat",
+    "minecraft:parrot",
+    "minecraft:bee",
+    "minecraft:fox",
+    "minecraft:panda",
+    "minecraft:ocelot",
+    "minecraft:axolotl",
+    "minecraft:turtle",
+    "minecraft:mooshroom"
+  ]
+}
