@@ -21,8 +21,8 @@ Pull requests are the best way to propose changes to the codebase. We actively w
 5. Make sure your code lints.
 6. Issue that pull request!
 
-## Any contributions you make will be under the [Your License] Software License
-In short, when you submit code changes, your submissions are understood to be under the same [Your License] that covers the project. Feel free to contact the maintainers if that's a concern.
+## Any contributions you make will be under the GNU General Public License v3.0 Software License
+In short, when you submit code changes, your submissions are understood to be under the same GNU General Public License v3.0 that covers the project. Feel free to contact the maintainers if that's a concern.
 
 ## Report bugs using Github's [issues](https://github.com/Kubik-Modder/ReputationMod-1.0/issues)
 We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/Kubik-Modder/ReputationMod-1.0/issues); it's that easy!
