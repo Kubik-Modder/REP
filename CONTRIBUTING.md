@@ -9,7 +9,7 @@ I love your input! I want to make contributing to this project as easy and trans
 - Becoming a maintainer
 
 ## I Develop with GitHub
-We use github to host code, to track issues and feature requests, as well as accept pull requests.
+I use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
 
 ## I Use [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow), So All Code Changes Happen Through Pull Requests
 Pull requests are the best way to propose changes to the codebase. We actively welcome your pull requests:
@@ -25,7 +25,7 @@ Pull requests are the best way to propose changes to the codebase. We actively w
 In short, when you submit code changes, your submissions are understood to be under the same GNU General Public License version 3 (GPLv3) that covers the project. Feel free to contact the maintainers if that's a concern.
 
 ## Report bugs using GitHub's [issues](https://github.com/Kubik-Modder/ReputationMod-1.0/issues)
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/Kubik-Modder/ReputationMod-1.0/issues); it's that easy!
+I use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/Kubik-Modder/ReputationMod-1.0/issues); it's that easy!
 
 ## Write bug reports with detail, background, and sample code
 
