@@ -35,8 +35,8 @@ public class ModHudOverlay {
         int screenHeight = minecraft.getWindow().getGuiScaledHeight();
 
         // POSITION OF THE GUI
-        int x = screenWidth / 2 - 116;
-        int y = screenHeight - 24;
+        int x = screenWidth / 2 - 10;
+        int y = screenHeight - 55;
 
         ResourceLocation selectedTexture;
         int reputation = ReputationManager.getClientReputation();
@@ -56,8 +56,8 @@ public class ModHudOverlay {
         RenderSystem.setShaderTexture(0, selectedTexture);
 
         // WIDTH AND HEIGHT(SIZE) OF THE GUI
-        int textureWidth = 25;
-        int textureHeight = 25;
+        int textureWidth = 20;
+        int textureHeight = 20;
 
         guiGraphics.blit(selectedTexture, x, y, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
     }
