@@ -38,6 +38,8 @@ import net.minecraftforge.fml.common.Mod;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static net.kubik.reputationmod.rep.ReputationManager.getMerchantFromMenu;
+
 @Mod.EventBusSubscriber(modid = ReputationMod.MOD_ID, value = Dist.CLIENT)
 public class ReputationEventHandler {
 
@@ -69,6 +71,17 @@ public class ReputationEventHandler {
         }
     }
 
+    private static void updateVillagerTrades(ServerLevel level) {
+        for (ServerPlayer serverPlayer : level.players()) {
+            if (serverPlayer.containerMenu instanceof MerchantMenu merchantMenu) {
+                Merchant merchant = getMerchantFromMenu(merchantMenu);
+                if (merchant instanceof AbstractVillager villager) {
+                    ReputationTradeAdjuster.adjustAllOffers(level, villager.getOffers());
+                }
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void onEntityDeath(LivingDeathEvent event) {
         Entity entity = event.getEntity();
@@ -90,13 +103,6 @@ public class ReputationEventHandler {
 
         ReputationManager.setReputation(level, newReputation);
         ServerAndClientSync.sendToAllPlayers(level);
-
-        String bossName = boss instanceof EnderDragon ? "Ender Dragon" : "Wither";
-
-        ReputationMod.LOGGER.info("Player " + player.getName().getString() +
-                " killed the " + bossName +
-                ". Reputation set to maximum (100)" +
-                (currentReputation < 100 ? " (previously " + currentReputation + ")" : ""));
     }
 
     @SubscribeEvent
@@ -110,12 +116,6 @@ public class ReputationEventHandler {
                 int newReputation = Math.min(100, currentReputation + ACHIEVEMENT_REPUTATION_INCREASE);
 
                 ReputationManager.setReputation(level, newReputation);
-
-                ReputationMod.LOGGER.info("Player " + player.getName().getString() +
-                        " earned achievement " + advancement.getId() +
-                        ". Reputation increased from " + currentReputation +
-                        " to " + newReputation +
-                        " (+" + ACHIEVEMENT_REPUTATION_INCREASE + ")");
             }
         }
     }
@@ -142,41 +142,25 @@ public class ReputationEventHandler {
 
     @SubscribeEvent
     public static void onPlayerOpenContainer(PlayerContainerEvent.Open event) {
-        ReputationMod.LOGGER.info("PlayerContainerEvent.Open fired");
         if (event.getContainer() instanceof MerchantMenu merchantMenu) {
-            ReputationMod.LOGGER.info("Container is a MerchantMenu");
-            if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-                ReputationMod.LOGGER.info("Entity is a ServerPlayer");
 
+            if (event.getEntity() instanceof ServerPlayer serverPlayer) {
                 Merchant merchant = getMerchantFromMenu(merchantMenu);
+
                 if (merchant != null) {
-                    ReputationMod.LOGGER.info("Merchant class: " + merchant.getClass().getName());
 
                     if (merchant instanceof AbstractVillager villager) {
-                        ReputationMod.LOGGER.info("Merchant is an AbstractVillager");
+
                         if (serverPlayer.level() instanceof ServerLevel serverLevel) {
-                            ReputationMod.LOGGER.info("Level is a ServerLevel");
                             int currentReputation = ReputationManager.getReputation(serverLevel);
                             if (currentReputation != lastAdjustedReputation) {
                                 ReputationTradeAdjuster.adjustAllOffers(serverLevel, villager.getOffers());
                                 lastAdjustedReputation = currentReputation;
-                            } else {
-                                ReputationMod.LOGGER.info("Skipping price adjustment as reputation hasn't changed.");
                             }
-                        } else {
-                            ReputationMod.LOGGER.info("Level is not a ServerLevel");
                         }
-                    } else {
-                        ReputationMod.LOGGER.info("Merchant is not an AbstractVillager");
                     }
-                } else {
-                    ReputationMod.LOGGER.info("Could not access merchant from MerchantMenu");
                 }
-            } else {
-                ReputationMod.LOGGER.info("Entity is not a ServerPlayer");
             }
-        } else {
-            ReputationMod.LOGGER.info("Container is not a MerchantMenu");
         }
     }
 
@@ -189,7 +173,6 @@ public class ReputationEventHandler {
                 int newReputation = Math.min(100, currentReputation + 2);
 
                 ReputationManager.updateReputation(level, newReputation);
-                ReputationMod.LOGGER.info("Player " + player.getName().getString() + " repaired an Iron Golem. Reputation increased from " + currentReputation + " to " + newReputation);
             }
         }
     }
@@ -204,9 +187,6 @@ public class ReputationEventHandler {
             int newReputation = Math.min(100, currentReputation + 50);
 
             ReputationManager.updateReputation(level, newReputation);
-            ReputationMod.LOGGER.info("Player " + player.getName().getString() +
-                    " received Hero of the Village effect. Reputation increased from " +
-                    currentReputation + " to " + newReputation);
         }
     }
 
@@ -221,19 +201,14 @@ public class ReputationEventHandler {
         });
     }
 
-    private static Merchant getMerchantFromMenu(MerchantMenu menu) {
+    public static Merchant getMerchantFromMenu(MerchantMenu menu) {
         try {
-            java.lang.reflect.Field[] fields = MerchantMenu.class.getDeclaredFields();
-            for (java.lang.reflect.Field field : fields) {
-                if (Merchant.class.isAssignableFrom(field.getType())) {
-                    field.setAccessible(true);
-                    return (Merchant) field.get(menu);
-                }
-            }
-        } catch (IllegalAccessException e) {
-            ReputationMod.LOGGER.error("Error accessing merchant field", e);
+            Field traderField = MerchantMenu.class.getDeclaredField("trader");
+            traderField.setAccessible(true);
+            return (Merchant) traderField.get(menu);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return null;
         }
-        return null;
     }
 
     @SubscribeEvent

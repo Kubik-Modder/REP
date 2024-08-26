@@ -28,11 +28,9 @@ public class WeatherHandler {
                 if (RANDOM.nextFloat() < thunderChance) {
                     int duration = calculateWeatherDuration(reputation);
                     serverLevel.setWeatherParameters(0, duration, true, true);
-                    ReputationMod.LOGGER.info("Started thunderstorm due to low reputation. Duration: " + duration + " ticks");
                 } else if (RANDOM.nextFloat() < rainChance) {
                     int duration = calculateWeatherDuration(reputation);
                     serverLevel.setWeatherParameters(0, duration, true, false);
-                    ReputationMod.LOGGER.info("Started raining due to low reputation. Duration: " + duration + " ticks");
                 }
             }
         }

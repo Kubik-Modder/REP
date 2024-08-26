@@ -26,7 +26,6 @@ public class LowReputationMobSpawnHandler {
             if (reputation <= LOW_REPUTATION_THRESHOLD) {
                 if (RANDOM.nextFloat() < ADDITIONAL_SPAWN_CHANCE) {
                     event.setResult(Event.Result.ALLOW);
-                    ReputationMod.LOGGER.debug("Additional hostile mob spawn due to low reputation");
                 }
 
                 if (RANDOM.nextFloat() < ADDITIONAL_SPAWN_CHANCE) {
@@ -34,7 +33,6 @@ public class LowReputationMobSpawnHandler {
                     if (additionalMob != null) {
                         additionalMob.moveTo(event.getX(), event.getY(), event.getZ());
                         serverLevel.addFreshEntity(additionalMob);
-                        ReputationMod.LOGGER.debug("Spawned additional hostile mob due to low reputation");
                     }
                 }
             }

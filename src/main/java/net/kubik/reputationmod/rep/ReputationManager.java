@@ -1,8 +1,17 @@
 package net.kubik.reputationmod.rep;
 
 import net.kubik.reputationmod.ReputationMod;
+import net.kubik.reputationmod.rep.event.ReputationTradeAdjuster;
 import net.kubik.reputationmod.rep.network.ServerAndClientSync;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.inventory.MerchantMenu;
+import net.minecraft.world.item.trading.Merchant;
+
+import java.lang.reflect.Field;
+
+import static net.kubik.reputationmod.rep.ReputationEventHandler.getMerchantFromMenu;
 
 public class ReputationManager {
     private static int clientReputation = 100;
@@ -17,7 +26,9 @@ public class ReputationManager {
         worldData.setReputation(Math.max(0, Math.min(100, value)));
         worldData.setDirty();
         ServerAndClientSync.sendToAllPlayers(level);
+        updateVillagerTrades(level);
     }
+
 
     public static void increaseReputation(ServerLevel level, int amount) {
         ReputationWorldData worldData = ReputationWorldData.getOrCreate(level);
@@ -25,6 +36,7 @@ public class ReputationManager {
         worldData.setReputation(newReputation);
         worldData.setDirty();
         ServerAndClientSync.sendToAllPlayers(level);
+        updateVillagerTrades(level);
     }
 
     public static void decreaseReputation(ServerLevel level, int amount) {
@@ -33,6 +45,29 @@ public class ReputationManager {
         worldData.setReputation(newReputation);
         worldData.setDirty();
         ServerAndClientSync.sendToAllPlayers(level);
+        updateVillagerTrades(level);
+    }
+
+    private static void updateVillagerTrades(ServerLevel level) {
+        for (ServerPlayer serverPlayer : level.players()) {
+            if (serverPlayer.containerMenu instanceof MerchantMenu merchantMenu) {
+                Merchant merchant = getMerchantFromMenu(merchantMenu);
+                if (merchant instanceof AbstractVillager villager) {
+                    ReputationTradeAdjuster.adjustAllOffers(level, villager.getOffers());
+                }
+            }
+        }
+    }
+
+    public static Merchant getMerchantFromMenu(MerchantMenu menu) {
+        try {
+            Field traderField = MerchantMenu.class.getDeclaredField("trader");
+            traderField.setAccessible(true);
+            return (Merchant) traderField.get(menu);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            ReputationMod.LOGGER.error("Error accessing merchant field", e);
+            return null;
+        }
     }
 
     public static boolean isLowReputation(ServerLevel level) {

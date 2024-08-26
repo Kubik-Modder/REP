@@ -18,7 +18,6 @@ public class ReputationTradeAdjuster {
     public static void adjustAllOffers(ServerLevel level, MerchantOffers offers) {
         int reputation = ReputationManager.getReputation(level);
         float priceMultiplier = calculatePriceMultiplier(reputation);
-        ReputationMod.LOGGER.info("Adjusting all offers. Reputation: " + reputation + ", Price multiplier: " + priceMultiplier);
 
         for (MerchantOffer offer : offers) {
             adjustOffer(offer, priceMultiplier);
@@ -41,9 +40,6 @@ public class ReputationTradeAdjuster {
         if (!costB.isEmpty()) {
             offer.getCostB().setCount(newCostB);
         }
-
-        ReputationMod.LOGGER.info("Adjusting offer. Original costs: " + baseCostA.getCount() + ", " + (costB.isEmpty() ? 0 : costB.getCount()) +
-                ". New costs: " + newCostA + ", " + newCostB);
     }
 
     public static float calculatePriceMultiplier(int reputation) {
