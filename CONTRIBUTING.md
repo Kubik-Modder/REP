@@ -1,6 +1,6 @@
 # Contributing to REP
 
-We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
+I love your input! I want to make contributing to this project as easy and transparent as possible, whether it's:
 
 - Reporting a bug
 - Discussing the current state of the code
@@ -8,10 +8,10 @@ We love your input! We want to make contributing to this project as easy and tra
 - Proposing new features
 - Becoming a maintainer
 
-## We Develop with GitHub
+## I Develop with GitHub
 We use github to host code, to track issues and feature requests, as well as accept pull requests.
 
-## We Use [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow), So All Code Changes Happen Through Pull Requests
+## I Use [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow), So All Code Changes Happen Through Pull Requests
 Pull requests are the best way to propose changes to the codebase. We actively welcome your pull requests:
 
 1. Fork the repo and create your branch from `main`.
