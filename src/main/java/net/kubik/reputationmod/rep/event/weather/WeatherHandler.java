@@ -1,4 +1,4 @@
-package net.kubik.reputationmod.rep.event;
+package net.kubik.reputationmod.rep.event.weather;
 
 import net.kubik.reputationmod.ReputationMod;
 import net.kubik.reputationmod.rep.ReputationManager;

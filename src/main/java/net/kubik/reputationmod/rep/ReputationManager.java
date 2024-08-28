@@ -1,7 +1,7 @@
 package net.kubik.reputationmod.rep;
 
 import net.kubik.reputationmod.ReputationMod;
-import net.kubik.reputationmod.rep.event.ReputationTradeAdjuster;
+import net.kubik.reputationmod.rep.event.entity.villager.ReputationTradeAdjuster;
 import net.kubik.reputationmod.rep.network.ServerAndClientSync;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,8 +10,6 @@ import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.item.trading.Merchant;
 
 import java.lang.reflect.Field;
-
-import static net.kubik.reputationmod.rep.ReputationEventHandler.getMerchantFromMenu;
 
 public class ReputationManager {
     private static int clientReputation = 100;

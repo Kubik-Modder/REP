@@ -1,11 +1,10 @@
-package net.kubik.reputationmod.rep.event;
+package net.kubik.reputationmod.rep.event.entity.villager;
 
 import net.kubik.reputationmod.rep.ReputationManager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.server.level.ServerLevel;
-import net.kubik.reputationmod.ReputationMod;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package net.kubik.reputationmod.rep;
 
 import net.kubik.reputationmod.ReputationMod;
-import net.kubik.reputationmod.rep.event.ReputationTradeAdjuster;
+import net.kubik.reputationmod.rep.event.entity.villager.ReputationTradeAdjuster;
 import net.kubik.reputationmod.rep.network.ServerAndClientSync;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.server.level.ServerLevel;
@@ -37,8 +37,6 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.lang.reflect.Field;
 import java.util.List;
-
-import static net.kubik.reputationmod.rep.ReputationManager.getMerchantFromMenu;
 
 @Mod.EventBusSubscriber(modid = ReputationMod.MOD_ID, value = Dist.CLIENT)
 public class ReputationEventHandler {

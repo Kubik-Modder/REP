@@ -3,7 +3,9 @@ package net.kubik.reputationmod;
 import com.mojang.logging.LogUtils;
 import net.kubik.reputationmod.gui.ModHudOverlay;
 import net.kubik.reputationmod.rep.ReputationEventHandler;
-import net.kubik.reputationmod.rep.event.LowReputationMobSpawnHandler;
+import net.kubik.reputationmod.rep.event.crop.LowReputationCropFailureHandler;
+import net.kubik.reputationmod.rep.event.entity.LowReputationMobSpawnHandler;
+import net.kubik.reputationmod.rep.event.entity.villager.TradeRejectionHandler;
 import net.kubik.reputationmod.rep.network.ServerAndClientSync;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -53,6 +55,8 @@ public class ReputationMod {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new ReputationEventHandler());
         MinecraftForge.EVENT_BUS.register(LowReputationMobSpawnHandler.class);
+        MinecraftForge.EVENT_BUS.register(TradeRejectionHandler.class);
+        MinecraftForge.EVENT_BUS.register(LowReputationCropFailureHandler.class);
 
     }
 
