@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
 
 public class ReputationManager {
     private static int clientReputation = 100;
-    private static final int LOW_REPUTATION_THRESHOLD = 30;
+    private static final int LOW_REPUTATION_THRESHOLD = 20;
 
     public static int getReputation(ServerLevel level) {
         return ReputationWorldData.getOrCreate(level).getReputation();
@@ -77,7 +77,6 @@ public class ReputationManager {
         setReputation(level, newReputation);
         ReputationMod.LOGGER.info("Reputation updated to: " + newReputation);
     }
-
 
     public static int getClientReputation() {
         return clientReputation;

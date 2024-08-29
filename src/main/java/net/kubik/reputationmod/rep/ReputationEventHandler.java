@@ -168,7 +168,7 @@ public class ReputationEventHandler {
             if (event.getItemStack().getItem() == Items.IRON_INGOT && golem.getHealth() < golem.getMaxHealth()) {
                 ServerLevel level = (ServerLevel) player.level();
                 int currentReputation = ReputationManager.getReputation(level);
-                int newReputation = Math.min(100, currentReputation + 2);
+                int newReputation = Math.min(100, currentReputation + 5);
 
                 ReputationManager.updateReputation(level, newReputation);
             }
@@ -240,7 +240,7 @@ public class ReputationEventHandler {
                         if (trader instanceof WanderingTrader) {
                             ReputationManager.increaseReputation(serverLevel, 5);
                         } else if (trader instanceof AbstractVillager) {
-                            ReputationManager.increaseReputation(serverLevel, 2);
+                            ReputationManager.increaseReputation(serverLevel, 5);
                         }
                         ServerAndClientSync.sendToAllPlayers(serverLevel);
                     }

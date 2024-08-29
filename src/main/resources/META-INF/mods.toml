@@ -3,7 +3,7 @@ loaderVersion="[47,)"
 license="GNU General Public License version 3 (GPLv3)"
 [[mods]]
 modId="reputationmod"
-version="2.0"
+version="2.1"
 displayName="REP"
 
 logoFile="rep_pfp.png"

@@ -73,8 +73,7 @@ public class LowReputationMobSpawnHandler {
         EntityType<?>[] mobTypes = {
                 EntityType.ZOMBIE,
                 EntityType.SKELETON,
-                EntityType.SPIDER,
-                EntityType.CREEPER
+                EntityType.SPIDER
         };
         return mobTypes[RANDOM.nextInt(mobTypes.length)];
     }
