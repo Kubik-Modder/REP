@@ -25,7 +25,7 @@ public class ReputationWorldData extends SavedData {
     }
 
     public void setReputation(int value) {
-        this.reputation = Math.max(0, Math.min(100, value)); // Clamp between 0 and 100
+        reputation = Math.max(0, Math.min(100, value));
         setDirty();
     }
 

@@ -13,7 +13,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = ReputationMod.MOD_ID, value = Dist.CLIENT)
-public class ModHudOverlay {
+public class ReputationHudOverlay {
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     private static final ResourceLocation GUI_TEXTURE_VERY_BAD = new ResourceLocation("reputationmod", "textures/gui/rep_gui_bad.png");

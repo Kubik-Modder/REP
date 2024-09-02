@@ -26,22 +26,17 @@ public class ServerAndClientSync {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ReputationManager.setClientReputation(reputation);
-        });
+        ctx.get().enqueueWork(() -> ReputationManager.setClientReputation(reputation));
         ctx.get().setPacketHandled(true);
     }
 
     public static void sendToClient(ServerPlayer player) {
-        ServerLevel level = (ServerLevel) player.getCommandSenderWorld();
-        int reputation = ReputationManager.getReputation(level);
-        ReputationMod.NETWORK.send(PacketDistributor.PLAYER.with(
-                () -> player), new ServerAndClientSync(reputation));
+        int reputation = ReputationManager.getReputation((ServerLevel) player.getCommandSenderWorld());
+        ReputationMod.NETWORK.send(PacketDistributor.PLAYER.with(() -> player), new ServerAndClientSync(reputation));
     }
 
     public static void sendToAllPlayers(ServerLevel level) {
         int reputation = ReputationManager.getReputation(level);
-        ReputationMod.NETWORK.send(PacketDistributor.ALL.noArg(),
-                new ServerAndClientSync(reputation));
+        ReputationMod.NETWORK.send(PacketDistributor.ALL.noArg(), new ServerAndClientSync(reputation));
     }
 }

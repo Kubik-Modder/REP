@@ -11,7 +11,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraft.world.entity.npc.*;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.entity.npc.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
@@ -21,7 +23,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -47,13 +48,10 @@ public class ReputationEventHandler {
     @SubscribeEvent
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            Level level = serverPlayer.getCommandSenderWorld();
-            if (level instanceof ServerLevel serverLevel) {
-                int reputation = ReputationManager.getReputation(serverLevel);
-                ReputationMod.LOGGER.info("Player {} joined. Current reputation: {}",
-                        serverPlayer.getName().getString(), reputation);
-                ServerAndClientSync.sendToClient(serverPlayer);
-            }
+            ServerLevel level = (ServerLevel) serverPlayer.getCommandSenderWorld();
+            int reputation = ReputationManager.getReputation(level);
+            ReputationMod.LOGGER.info("Player {} joined. Current reputation: {}", serverPlayer.getName().getString(), reputation);
+            ServerAndClientSync.sendToClient(serverPlayer);
         }
     }
 
@@ -69,37 +67,22 @@ public class ReputationEventHandler {
         }
     }
 
-    private static void updateVillagerTrades(ServerLevel level) {
-        for (ServerPlayer serverPlayer : level.players()) {
-            if (serverPlayer.containerMenu instanceof MerchantMenu merchantMenu) {
-                Merchant merchant = getMerchantFromMenu(merchantMenu);
-                if (merchant instanceof AbstractVillager villager) {
-                    ReputationTradeAdjuster.adjustAllOffers(level, villager.getOffers());
-                }
-            }
-        }
-    }
-
     @SubscribeEvent
     public static void onEntityDeath(LivingDeathEvent event) {
         Entity entity = event.getEntity();
         Entity source = event.getSource().getEntity();
-
         if (entity.level() instanceof ServerLevel level && source instanceof ServerPlayer player) {
             if (entity.getType().is(ReputationMod.REPUTATION_AFFECTING_ENTITIES)) {
                 ReputationManager.decreaseReputation(level, 50);
                 ServerAndClientSync.sendToAllPlayers(level);
             } else if (entity instanceof EnderDragon || entity instanceof WitherBoss) {
-                handleBossKill(level, player, entity);
+                handleBossKill(level, player);
             }
         }
     }
 
-    private static void handleBossKill(ServerLevel level, ServerPlayer player, Entity boss) {
-        int currentReputation = ReputationManager.getReputation(level);
-        int newReputation = 100;
-
-        ReputationManager.setReputation(level, newReputation);
+    private static void handleBossKill(ServerLevel level, ServerPlayer player) {
+        ReputationManager.setReputation(level, 100);
         ServerAndClientSync.sendToAllPlayers(level);
     }
 
@@ -107,12 +90,9 @@ public class ReputationEventHandler {
     public static void onAdvancementCompleted(AdvancementEvent.AdvancementEarnEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             Advancement advancement = event.getAdvancement();
-
             if (!advancement.getId().getPath().startsWith("recipes/")) {
                 ServerLevel level = player.serverLevel();
-                int currentReputation = ReputationManager.getReputation(level);
-                int newReputation = Math.min(100, currentReputation + ACHIEVEMENT_REPUTATION_INCREASE);
-
+                int newReputation = Math.min(100, ReputationManager.getReputation(level) + ACHIEVEMENT_REPUTATION_INCREASE);
                 ReputationManager.setReputation(level, newReputation);
             }
         }
@@ -120,7 +100,6 @@ public class ReputationEventHandler {
 
     @SubscribeEvent
     public static void onVillagerTrades(VillagerTradesEvent event) {
-        VillagerProfession profession = event.getType();
         for (int i = 1; i <= 5; i++) {
             List<VillagerTrades.ItemListing> trades = event.getTrades().get(i);
             if (trades != null) {
@@ -140,23 +119,13 @@ public class ReputationEventHandler {
 
     @SubscribeEvent
     public static void onPlayerOpenContainer(PlayerContainerEvent.Open event) {
-        if (event.getContainer() instanceof MerchantMenu merchantMenu) {
-
-            if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-                Merchant merchant = getMerchantFromMenu(merchantMenu);
-
-                if (merchant != null) {
-
-                    if (merchant instanceof AbstractVillager villager) {
-
-                        if (serverPlayer.level() instanceof ServerLevel serverLevel) {
-                            int currentReputation = ReputationManager.getReputation(serverLevel);
-                            if (currentReputation != lastAdjustedReputation) {
-                                ReputationTradeAdjuster.adjustAllOffers(serverLevel, villager.getOffers());
-                                lastAdjustedReputation = currentReputation;
-                            }
-                        }
-                    }
+        if (event.getContainer() instanceof MerchantMenu merchantMenu && event.getEntity() instanceof ServerPlayer serverPlayer) {
+            Merchant merchant = getMerchantFromMenu(merchantMenu);
+            if (merchant instanceof AbstractVillager villager && serverPlayer.level() instanceof ServerLevel serverLevel) {
+                int currentReputation = ReputationManager.getReputation(serverLevel);
+                if (currentReputation != lastAdjustedReputation) {
+                    ReputationTradeAdjuster.adjustAllOffers(serverLevel, villager.getOffers());
+                    lastAdjustedReputation = currentReputation;
                 }
             }
         }
@@ -167,9 +136,7 @@ public class ReputationEventHandler {
         if (event.getTarget() instanceof IronGolem golem && event.getEntity() instanceof ServerPlayer player) {
             if (event.getItemStack().getItem() == Items.IRON_INGOT && golem.getHealth() < golem.getMaxHealth()) {
                 ServerLevel level = (ServerLevel) player.level();
-                int currentReputation = ReputationManager.getReputation(level);
-                int newReputation = Math.min(100, currentReputation + 5);
-
+                int newReputation = Math.min(100, ReputationManager.getReputation(level) + 5);
                 ReputationManager.updateReputation(level, newReputation);
             }
         }
@@ -177,35 +144,10 @@ public class ReputationEventHandler {
 
     @SubscribeEvent
     public static void onPotionAdded(MobEffectEvent.Added event) {
-        if (event.getEntity() instanceof ServerPlayer player &&
-                event.getEffectInstance().getEffect() == MobEffects.HERO_OF_THE_VILLAGE) {
-
+        if (event.getEntity() instanceof ServerPlayer player && event.getEffectInstance().getEffect() == MobEffects.HERO_OF_THE_VILLAGE) {
             ServerLevel level = (ServerLevel) player.level();
-            int currentReputation = ReputationManager.getReputation(level);
-            int newReputation = Math.min(100, currentReputation + 50);
-
+            int newReputation = Math.min(100, ReputationManager.getReputation(level) + 50);
             ReputationManager.updateReputation(level, newReputation);
-        }
-    }
-
-    private static void adjustOffers(AbstractVillager villager, ServerLevel serverLevel) {
-        float priceMultiplier = ReputationTradeAdjuster.calculatePriceMultiplier(ReputationManager.getReputation(serverLevel));
-        villager.getOffers().forEach(offer -> {
-            MerchantOffer adjustedOffer = ReputationTradeAdjuster.adjustTradeOffer(serverLevel, offer);
-            if (adjustedOffer != null) {
-                offer.getBaseCostA().setCount(adjustedOffer.getBaseCostA().getCount());
-                offer.getCostB().setCount(adjustedOffer.getCostB().getCount());
-            }
-        });
-    }
-
-    public static Merchant getMerchantFromMenu(MerchantMenu menu) {
-        try {
-            Field traderField = MerchantMenu.class.getDeclaredField("trader");
-            traderField.setAccessible(true);
-            return (Merchant) traderField.get(menu);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            return null;
         }
     }
 
@@ -232,27 +174,20 @@ public class ReputationEventHandler {
             if (menu == merchantMenu && slotId == 2) {
                 Slot outputSlot = merchantMenu.getSlot(2);
                 ItemStack currentOutput = outputSlot.getItem();
-
                 if (!previousOutput.isEmpty() && currentOutput.isEmpty()) {
-                    Level level = player.getCommandSenderWorld();
-                    if (level instanceof ServerLevel serverLevel) {
-                        Object trader = getTrader(merchantMenu);
-                        if (trader instanceof WanderingTrader) {
-                            ReputationManager.increaseReputation(serverLevel, 5);
-                        } else if (trader instanceof AbstractVillager) {
-                            ReputationManager.increaseReputation(serverLevel, 5);
-                        }
-                        ServerAndClientSync.sendToAllPlayers(serverLevel);
+                    ServerLevel level = (ServerLevel) player.getCommandSenderWorld();
+                    Object trader = getTrader(merchantMenu);
+                    if (trader instanceof WanderingTrader || trader instanceof AbstractVillager) {
+                        ReputationManager.increaseReputation(level, 5);
+                        ServerAndClientSync.sendToAllPlayers(level);
                     }
                 }
-
                 previousOutput = currentOutput.copy();
             }
         }
 
         @Override
         public void dataChanged(AbstractContainerMenu menu, int propertyId, int value) {
-
         }
     }
 
@@ -263,9 +198,19 @@ public class ReputationEventHandler {
             if (player.containerMenu instanceof MerchantMenu merchantMenu) {
                 Slot outputSlot = merchantMenu.getSlot(2);
                 ItemStack currentOutput = outputSlot.getItem();
-                }
             }
         }
+    }
+
+    private static Merchant getMerchantFromMenu(MerchantMenu menu) {
+        try {
+            Field traderField = MerchantMenu.class.getDeclaredField("trader");
+            traderField.setAccessible(true);
+            return (Merchant) traderField.get(menu);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return null;
+        }
+    }
 
     private static Object getTrader(MerchantMenu menu) {
         try {

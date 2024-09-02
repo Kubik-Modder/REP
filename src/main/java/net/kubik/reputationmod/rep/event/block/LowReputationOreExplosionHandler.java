@@ -5,9 +5,9 @@ import net.kubik.reputationmod.rep.ReputationManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -25,9 +25,7 @@ public class LowReputationOreExplosionHandler {
 
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
-        if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
-            return;
-        }
+        if (!(event.getLevel() instanceof ServerLevel serverLevel)) return;
 
         Player player = event.getPlayer();
         BlockState state = event.getState();
@@ -46,8 +44,7 @@ public class LowReputationOreExplosionHandler {
     }
 
     private static boolean isOre(Block block) {
-        String blockName = block.getDescriptionId().toLowerCase();
-        return blockName.contains("ore");
+        return block.getDescriptionId().toLowerCase().contains("ore");
     }
 
     private static float calculateExplosionChance(int reputation) {

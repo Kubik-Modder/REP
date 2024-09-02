@@ -1,7 +1,7 @@
 package net.kubik.reputationmod;
 
 import com.mojang.logging.LogUtils;
-import net.kubik.reputationmod.gui.ModHudOverlay;
+import net.kubik.reputationmod.gui.ReputationHudOverlay;
 import net.kubik.reputationmod.rep.ReputationEventHandler;
 import net.kubik.reputationmod.rep.event.block.LowReputationOreExplosionHandler;
 import net.kubik.reputationmod.rep.event.crop.LowReputationCropFailureHandler;
@@ -13,10 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -50,8 +47,6 @@ public class ReputationMod {
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::clientSetup);
-        modEventBus.addListener(this::addCreative);
-
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new ReputationEventHandler());
@@ -67,16 +62,7 @@ public class ReputationMod {
                 ServerAndClientSync::new, ServerAndClientSync::handle);
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-
-    }
-
     private void clientSetup(final FMLClientSetupEvent event) {
-        MinecraftForge.EVENT_BUS.register(new ModHudOverlay());
-    }
-
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-
+        MinecraftForge.EVENT_BUS.register(new ReputationHudOverlay());
     }
 }

@@ -23,21 +23,15 @@ public class LowReputationCropFailureHandler {
 
     @SubscribeEvent
     public static void onCropHarvest(BlockEvent.BreakEvent event) {
-        if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
-            return;
-        }
+        if (!(event.getLevel() instanceof ServerLevel serverLevel)) return;
 
         Block block = event.getState().getBlock();
-        if (!(block instanceof CropBlock cropBlock)) {
-            return;
-        }
+        if (!(block instanceof CropBlock)) return;
 
         int reputation = ReputationManager.getReputation(serverLevel);
-        if (reputation >= LOW_REPUTATION_THRESHOLD) {
-            return;
-        }
+        if (reputation >= LOW_REPUTATION_THRESHOLD) return;
 
-        float reputationFactor = (float)(LOW_REPUTATION_THRESHOLD - reputation) / LOW_REPUTATION_THRESHOLD;
+        float reputationFactor = (LOW_REPUTATION_THRESHOLD - reputation) / (float) LOW_REPUTATION_THRESHOLD;
         float failureChance = reputationFactor * MAX_FAILURE_CHANCE;
         float yieldReductionFactor = 1 - (reputationFactor * MAX_YIELD_REDUCTION);
 
@@ -50,8 +44,7 @@ public class LowReputationCropFailureHandler {
             serverLevel.destroyBlock(event.getPos(), false);
 
             for (ItemStack drop : drops) {
-                int newCount = Math.max(1, (int)(drop.getCount() * yieldReductionFactor));
-                drop.setCount(newCount);
+                drop.setCount(Math.max(1, (int) (drop.getCount() * yieldReductionFactor)));
                 Block.popResource(serverLevel, event.getPos(), drop);
             }
         }

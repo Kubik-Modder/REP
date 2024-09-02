@@ -18,7 +18,7 @@ public class IronGolemAggressionHandler {
     public static void onEntityJoinWorld(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof IronGolem golem && event.getLevel() instanceof ServerLevel serverLevel) {
             golem.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(golem, Player.class, 10, true, false,
-                    (player) -> ReputationManager.getReputation(serverLevel) <= REPUTATION_THRESHOLD));
+                    player -> ReputationManager.getReputation(serverLevel) <= REPUTATION_THRESHOLD));
         }
     }
 }

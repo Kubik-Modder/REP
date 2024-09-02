@@ -15,28 +15,19 @@ public class ReputationTradeAdjuster {
     private static final Map<MerchantOffer, ItemStack[]> originalPrices = new HashMap<>();
 
     public static void adjustAllOffers(ServerLevel level, MerchantOffers offers) {
-        int reputation = ReputationManager.getReputation(level);
-        float priceMultiplier = calculatePriceMultiplier(reputation);
-
+        float priceMultiplier = calculatePriceMultiplier(ReputationManager.getReputation(level));
         for (MerchantOffer offer : offers) {
             adjustOffer(offer, priceMultiplier);
         }
     }
 
     public static void adjustOffer(MerchantOffer offer, float priceMultiplier) {
-        if (!originalPrices.containsKey(offer)) {
-            originalPrices.put(offer, new ItemStack[]{offer.getBaseCostA().copy(), offer.getCostB().copy()});
-        }
-
+        originalPrices.putIfAbsent(offer, new ItemStack[]{offer.getBaseCostA().copy(), offer.getCostB().copy()});
         ItemStack[] original = originalPrices.get(offer);
-        ItemStack baseCostA = original[0].copy();
-        ItemStack costB = original[1].isEmpty() ? ItemStack.EMPTY : original[1].copy();
-
-        int newCostA = Math.min(MAX_PRICE, Math.max(1, Math.round(baseCostA.getCount() * priceMultiplier)));
-        int newCostB = costB.isEmpty() ? 0 : Math.min(MAX_PRICE, Math.max(1, Math.round(costB.getCount() * priceMultiplier)));
-
+        int newCostA = calculateNewCost(original[0].getCount(), priceMultiplier);
+        int newCostB = original[1].isEmpty() ? 0 : calculateNewCost(original[1].getCount(), priceMultiplier);
         offer.getBaseCostA().setCount(newCostA);
-        if (!costB.isEmpty()) {
+        if (!original[1].isEmpty()) {
             offer.getCostB().setCount(newCostB);
         }
     }
@@ -47,31 +38,22 @@ public class ReputationTradeAdjuster {
 
     public static MerchantOffer adjustTradeOffer(ServerLevel level, MerchantOffer offer) {
         if (offer == null) return null;
-
-        int reputation = ReputationManager.getReputation(level);
-        float priceMultiplier = calculatePriceMultiplier(reputation);
-
-        ItemStack baseCostA = offer.getBaseCostA().copy();
-        ItemStack costB = offer.getCostB().isEmpty() ? ItemStack.EMPTY : offer.getCostB().copy();
-        ItemStack result = offer.getResult().copy();
-
-        int newCostA = Math.min(MAX_PRICE, Math.max(1, Math.round(baseCostA.getCount() * priceMultiplier)));
-        int newCostB = costB.isEmpty() ? 0 : Math.min(MAX_PRICE, Math.max(1, Math.round(costB.getCount() * priceMultiplier)));
-
-        baseCostA.setCount(newCostA);
-        if (!costB.isEmpty()) {
-            costB.setCount(newCostB);
-        }
-
+        float priceMultiplier = calculatePriceMultiplier(ReputationManager.getReputation(level));
+        int newCostA = calculateNewCost(offer.getBaseCostA().getCount(), priceMultiplier);
+        int newCostB = offer.getCostB().isEmpty() ? 0 : calculateNewCost(offer.getCostB().getCount(), priceMultiplier);
         return new MerchantOffer(
-                baseCostA,
-                costB,
-                result,
+                new ItemStack(offer.getBaseCostA().getItem(), newCostA),
+                offer.getCostB().isEmpty() ? ItemStack.EMPTY : new ItemStack(offer.getCostB().getItem(), newCostB),
+                offer.getResult().copy(),
                 offer.getUses(),
                 offer.getMaxUses(),
                 offer.getXp(),
                 offer.getPriceMultiplier(),
                 offer.getDemand()
         );
+    }
+
+    private static int calculateNewCost(int originalCost, float priceMultiplier) {
+        return Math.min(MAX_PRICE, Math.max(1, Math.round(originalCost * priceMultiplier)));
     }
 }

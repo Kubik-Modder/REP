@@ -32,12 +32,9 @@ public class LowReputationMobSpawnHandler {
                 tickCounter = 0;
                 for (ServerLevel level : event.getServer().getAllLevels()) {
                     if (!level.isDay()) {
-                        for (ServerPlayer player : level.players()) {
-                            int reputation = ReputationManager.getReputation(level);
-                            if (reputation <= LOW_REPUTATION_THRESHOLD) {
-                                attemptMobSpawn(level, player);
-                            }
-                        }
+                        level.players().stream()
+                                .filter(player -> ReputationManager.getReputation(level) <= LOW_REPUTATION_THRESHOLD)
+                                .forEach(player -> attemptMobSpawn(level, player));
                     }
                 }
             }

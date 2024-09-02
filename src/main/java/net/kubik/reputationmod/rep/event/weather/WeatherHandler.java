@@ -37,22 +37,19 @@ public class WeatherHandler {
     }
 
     private static float calculateRainChance(int reputation) {
-        float baseChance = 1.0f / 100000;
-
-        float multiplier = (100 - reputation) / 100.0f;
+        float baseChance = 1.0f / 5000;
+        float multiplier = (100 - reputation) / 50.0f;
         return baseChance * (1 + multiplier);
     }
 
     private static float calculateThunderChance(int reputation) {
-        float baseChance = 1.0f / 200000;
-
-        float multiplier = (float) Math.pow((100 - reputation) / 100.0f, 1.5);
+        float baseChance = 1.0f / 6000;
+        float multiplier = (float) Math.pow((100 - reputation) / 50.0f, 1.5);
         return baseChance * (1 + multiplier);
     }
 
     private static int calculateWeatherDuration(int reputation) {
         int baseDuration = 12000 + RANDOM.nextInt(12001);
-
         float multiplier = (100 - reputation) / 100.0f;
         return (int) (baseDuration * (1 + multiplier));
     }
