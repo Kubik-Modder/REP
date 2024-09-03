@@ -37,13 +37,13 @@ public class WeatherHandler {
     }
 
     private static float calculateRainChance(int reputation) {
-        float baseChance = 1.0f / 5000;
+        float baseChance = 1.0f / 10000;
         float multiplier = (100 - reputation) / 50.0f;
         return baseChance * (1 + multiplier);
     }
 
     private static float calculateThunderChance(int reputation) {
-        float baseChance = 1.0f / 6000;
+        float baseChance = 1.0f / 12000;
         float multiplier = (float) Math.pow((100 - reputation) / 50.0f, 1.5);
         return baseChance * (1 + multiplier);
     }
