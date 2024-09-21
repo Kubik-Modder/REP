@@ -1,8 +1,8 @@
 package net.kubik.reputationmod.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.kubik.reputationmod.rep.ReputationManager;
 import net.kubik.reputationmod.ReputationMod;
+import net.kubik.reputationmod.rep.ReputationManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +15,10 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = ReputationMod.MOD_ID, value = Dist.CLIENT)
 public class ReputationHudOverlay {
     private static final Minecraft minecraft = Minecraft.getInstance();
+
+    // POSITION OF THE GUI
+    public static int guiX = minecraft.getWindow().getGuiScaledWidth() / 2 + 230;
+    public static int guiY = minecraft.getWindow().getGuiScaledHeight() + 200;
 
     private static final ResourceLocation GUI_TEXTURE_VERY_BAD = new ResourceLocation("reputationmod", "textures/gui/rep_gui_bad.png");
     private static final ResourceLocation GUI_TEXTURE_BAD = new ResourceLocation("reputationmod", "textures/gui/rep_gui_below_neutral.png");
@@ -31,13 +35,6 @@ public class ReputationHudOverlay {
     }
 
     private static void renderCustomGui(GuiGraphics guiGraphics) {
-        int screenWidth = minecraft.getWindow().getGuiScaledWidth();
-        int screenHeight = minecraft.getWindow().getGuiScaledHeight();
-
-        // POSITION OF THE GUI
-        int x = screenWidth / 2 - 10;
-        int y = screenHeight - 55;
-
         ResourceLocation selectedTexture;
         int reputation = ReputationManager.getClientReputation();
 
@@ -55,10 +52,10 @@ public class ReputationHudOverlay {
 
         RenderSystem.setShaderTexture(0, selectedTexture);
 
-        // WIDTH AND HEIGHT(SIZE) OF THE GUI
+        // WIDTH AND HEIGHT (SIZE) OF THE GUI
         int textureWidth = 20;
         int textureHeight = 20;
 
-        guiGraphics.blit(selectedTexture, x, y, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
+        guiGraphics.blit(selectedTexture, guiX, guiY, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
     }
 }
