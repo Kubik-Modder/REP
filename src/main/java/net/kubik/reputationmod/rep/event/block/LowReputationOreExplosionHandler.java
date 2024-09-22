@@ -3,7 +3,10 @@ package net.kubik.reputationmod.rep.event.block;
 import net.kubik.reputationmod.ReputationMod;
 import net.kubik.reputationmod.rep.ReputationManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -23,28 +26,30 @@ public class LowReputationOreExplosionHandler {
     private static final float EXPLOSION_POWER = 5.0f;
     private static final Random RANDOM = new Random();
 
+    private static final TagKey<Block> CUSTOM_ORES_TAG = TagKey.create(Registries.BLOCK, new ResourceLocation(ReputationMod.MOD_ID, "explosive_ores"));
+
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
         if (!(event.getLevel() instanceof ServerLevel serverLevel)) return;
 
         Player player = event.getPlayer();
         BlockState state = event.getState();
-        Block block = state.getBlock();
+        BlockPos pos = event.getPos();
 
-        if (isOre(block)) {
+        if (isOre(state)) {
             int reputation = ReputationManager.getReputation(serverLevel);
             if (reputation <= LOW_REPUTATION_THRESHOLD) {
                 float explosionChance = calculateExplosionChance(reputation);
                 if (RANDOM.nextFloat() < explosionChance) {
                     event.setCanceled(true);
-                    triggerExplosion(serverLevel, event.getPos());
+                    triggerExplosion(serverLevel, pos);
                 }
             }
         }
     }
 
-    private static boolean isOre(Block block) {
-        return block.getDescriptionId().toLowerCase().contains("ore");
+    private static boolean isOre(BlockState state) {
+        return state.is(CUSTOM_ORES_TAG);
     }
 
     private static float calculateExplosionChance(int reputation) {

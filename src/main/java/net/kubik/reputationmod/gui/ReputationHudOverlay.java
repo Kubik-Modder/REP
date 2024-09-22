@@ -16,9 +16,20 @@ import net.minecraftforge.fml.common.Mod;
 public class ReputationHudOverlay {
     private static final Minecraft minecraft = Minecraft.getInstance();
 
-    // POSITION OF THE GUI
-    public static int guiX = minecraft.getWindow().getGuiScaledWidth() / 2 + 230;
-    public static int guiY = minecraft.getWindow().getGuiScaledHeight() + 200;
+    public static final int DEFAULT_GUI_X;
+    public static final int DEFAULT_GUI_Y;
+
+    public static int guiX;
+    public static int guiY;
+
+    static {
+        // POSITION OF THE GUI
+        DEFAULT_GUI_X = minecraft.getWindow().getGuiScaledWidth() / 2 + 230;
+        DEFAULT_GUI_Y = minecraft.getWindow().getGuiScaledHeight() + 197;
+
+        guiX = DEFAULT_GUI_X;
+        guiY = DEFAULT_GUI_Y;
+    }
 
     private static final ResourceLocation GUI_TEXTURE_VERY_BAD = new ResourceLocation("reputationmod", "textures/gui/rep_gui_bad.png");
     private static final ResourceLocation GUI_TEXTURE_BAD = new ResourceLocation("reputationmod", "textures/gui/rep_gui_below_neutral.png");
